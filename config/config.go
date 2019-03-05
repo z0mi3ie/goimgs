@@ -1,5 +1,7 @@
 package config
 
+import "fmt"
+
 // Application Server configuration
 const (
 	ServerPort        = 8081
@@ -21,3 +23,9 @@ const (
 	MySQLPassword = "password"
 	MySQLDatabase = "mydb"
 )
+
+// ImageServerTarget returns the currently defined target directory where images
+// are being served from
+func ImageServerTarget() string {
+	return fmt.Sprintf("%s:%s%s", ImageServerHost, ImageServerPort, ImageServerPath)
+}

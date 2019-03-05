@@ -25,6 +25,13 @@ type Data struct {
 	ogName   string
 }
 
+// MetaData holds the metadata associated with an image
+type MetaData struct {
+	ID     string
+	URL    string
+	OgName string
+}
+
 // NewImageData return a Data struct containing necessary information
 // to further process the file and request
 func NewImageData(f *multipart.FileHeader) (*Data, error) {
@@ -45,6 +52,20 @@ func NewImageData(f *multipart.FileHeader) (*Data, error) {
 	return d, nil
 }
 
+// NewImageMetaData returns a struct for an image metadata
+func NewImageMetaData(id, url, ogName string) MetaData {
+	return MetaData{
+		ID:     id,
+		URL:    url,
+		OgName: ogName,
+	}
+}
+
+// ID returns the image's globally unique ID
+func (d *Data) ID() string {
+	return d.id
+}
+
 // Filename is the name of the file when being served, returns a string
 func (d *Data) Filename() string {
 	return fmt.Sprintf("%s.%s", d.id, d.fileType)
@@ -53,6 +74,11 @@ func (d *Data) Filename() string {
 // URL is the path to the file where it is being served, returns a string
 func (d *Data) URL(path string) string {
 	return fmt.Sprintf("%s/%s", path, d.Filename())
+}
+
+// File returns the multipart.Fileheader for direct processing
+func (d *Data) File() *multipart.FileHeader {
+	return d.file
 }
 
 // generateUUIDString is a helper that generates a UUID V4 and returns its
