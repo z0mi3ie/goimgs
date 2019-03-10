@@ -4,17 +4,13 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/z0mi3ie/goimgs/config"
 	"github.com/z0mi3ie/goimgs/db"
 	"github.com/z0mi3ie/goimgs/image"
 )
 
 // GetImages retrieves all images
 func GetImages(c *gin.Context) {
-	dbClient, err := db.NewMySQLClient(config.MySQLUser, config.MySQLPassword, config.MySQLDatabase)
-	if err != nil {
-		c.AbortWithError(500, err)
-	}
+	dbClient := c.MustGet(MySQLClientKey).(*db.Client)
 	defer dbClient.DB().Close()
 
 	stmt, err := dbClient.DB().Prepare("SELECT * FROM image")
@@ -31,12 +27,15 @@ func GetImages(c *gin.Context) {
 	retrievedImgs := []image.MetaData{}
 	for rows.Next() {
 		var imgID, imgURL, imgOGName string
-		err := rows.Scan(&imgID, &imgURL, &imgOGName)
+		var imgDeleted bool
+		var imgDescription, imgTitle string
+
+		err := rows.Scan(&imgID, &imgURL, &imgOGName, &imgDeleted, &imgDescription, &imgTitle)
 		if err != nil {
 			c.AbortWithError(500, err)
 		}
-		fmt.Println(imgID, imgURL, imgOGName)
-		newImg := image.NewImageMetaData(imgID, imgURL, imgOGName)
+		fmt.Println(imgID, imgURL, imgOGName, imgDescription, imgTitle)
+		newImg := image.NewImageMetaData(imgID, imgURL, imgOGName, imgDescription, imgTitle)
 		retrievedImgs = append(retrievedImgs, newImg)
 	}
 	if err = rows.Err(); err != nil {
@@ -48,4 +47,6 @@ func GetImages(c *gin.Context) {
 	for _, img := range retrievedImgs {
 		fmt.Println(">> ", img.ID)
 	}
+
+	c.JSON(200, retrievedImgs)
 }

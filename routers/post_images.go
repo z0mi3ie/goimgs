@@ -9,7 +9,7 @@ import (
 	"github.com/z0mi3ie/goimgs/image"
 )
 
-// UploadImage will upload given images metadata to the database for bookkeeping
+// UploadImages will upload given images metadata to the database for bookkeeping
 // and then save the images to a directory, which can be served by the generated
 // url for the image's ID in the database.
 //
@@ -18,17 +18,14 @@ import (
 //
 // NOTE: If an error is encountered here during the initial implementation the
 // API will return a 500 -- not ideal and this will be cleaned up to make more sense :)
-func UploadImage(c *gin.Context) {
+func UploadImages(c *gin.Context) {
 	fmt.Println("Uploading image")
 	form, err := c.MultipartForm()
 	if err != nil {
 		c.AbortWithError(500, err)
 	}
 	files := form.File["image"]
-	dbClient, err := db.NewMySQLClient(config.MySQLUser, config.MySQLPassword, config.MySQLDatabase)
-	if err != nil {
-		c.AbortWithError(500, err)
-	}
+	dbClient := c.MustGet(MySQLClientKey).(*db.Client)
 	defer dbClient.DB().Close()
 	for _, file := range files {
 		// Add file data to the database
@@ -40,7 +37,7 @@ func UploadImage(c *gin.Context) {
 		if err != nil {
 			c.AbortWithError(500, err)
 		}
-		res, err := stmt.Exec(imgData.ID(), imgData.URL(config.ImageServerTarget()), imgData.Filename())
+		res, err := stmt.Exec(imgData.ID(), imgData.URL(config.ImageServerTarget()), imgData.OGName())
 		if err != nil {
 			c.AbortWithError(500, err)
 		}
