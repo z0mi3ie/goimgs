@@ -1,4 +1,4 @@
-version: '3'
+version: '3.2'
 services: 
   mysql:
     image: mysql:latest
@@ -13,3 +13,11 @@ services:
       - "3306"
     volumes:
       - ./mysql/data:/docker-entrypoint-initdb.d
+  imgserver:
+    build: ./docker/imgserver
+    volumes:
+      - type: bind
+        source: ./data
+        target: /data
+    ports:
+      - "8080:80"

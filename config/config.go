@@ -11,10 +11,10 @@ const (
 // Image Web Server Configuration
 const (
 	// The directory uploaded images are saved which are served from
-	ImageDataDir    = "/Users/mr_trashcans/go/src/github.com/z0mi3ie/goimgs/data/"
-	ImageServerHost = "localhost"
-	ImageServerPort = "8082"
-	ImageServerPath = "/data/"
+	ImageDataDir    = "/Users/mr_trashcans/go/src/github.com/z0mi3ie/goimgs/data/www/images"
+	ImageServerHost = "http://localhost"
+	ImageServerPort = "8080"
+	ImageServerPath = "/images/"
 )
 
 // MySQL DB Configuration

@@ -13,7 +13,7 @@ func GetImages(c *gin.Context) {
 	dbClient := c.MustGet(MySQLClientKey).(*db.Client)
 	defer dbClient.DB().Close()
 
-	stmt, err := dbClient.DB().Prepare("SELECT * FROM image")
+	stmt, err := dbClient.DB().Prepare("SELECT * FROM image WHERE deleted = false")
 	if err != nil {
 		c.AbortWithError(500, err)
 	}

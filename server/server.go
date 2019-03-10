@@ -45,6 +45,7 @@ func (s *Server) Start() {
 	)
 	s.router.DELETE("/images",
 		routers.MySQLClientMiddleware,
+		routers.DeleteImageQueryParamsMiddleware,
 		routers.DeleteImages,
 	)
 
