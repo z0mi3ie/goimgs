@@ -38,3 +38,8 @@ func DeleteImageQueryParamsMiddleware(c *gin.Context) {
 	}
 	c.Set(QueryParamsKey, params)
 }
+
+// CORSHeaderMiddleware handles setting up the CORS header for responses
+func CORSHeaderMiddleware(c *gin.Context) {
+	c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+}

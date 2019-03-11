@@ -35,19 +35,22 @@ func (s *Server) Start() {
 
 	s.router.MaxMultipartMemory = config.ServerMaxFileSize
 
-	s.router.POST("/image",
+	s.router.POST("/images",
 		routers.MySQLClientMiddleware,
+		routers.CORSHeaderMiddleware,
 		routers.UploadImages,
 	)
 	s.router.GET("/images",
 		routers.MySQLClientMiddleware,
+		routers.CORSHeaderMiddleware,
 		routers.GetImages,
 	)
 	s.router.DELETE("/images",
 		routers.MySQLClientMiddleware,
 		routers.DeleteImageQueryParamsMiddleware,
+		routers.CORSHeaderMiddleware,
 		routers.DeleteImages,
 	)
 
-	s.router.Run(fmt.Sprintf(":%v", config.ServerPort)) // listen and serve on 0.0.0.0:8080
+	s.router.Run(fmt.Sprintf(":%v", config.ServerPort))
 }

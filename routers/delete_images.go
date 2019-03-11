@@ -1,8 +1,6 @@
 package routers
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
 	"github.com/z0mi3ie/goimgs/db"
 )
@@ -14,27 +12,16 @@ func DeleteImages(c *gin.Context) {
 
 	qparams := c.MustGet(QueryParamsKey).(DeleteImageQueryParams)
 
-	// Deprecating hard deletes for soft deletes
-	//stmt, err := dbClient.DB().Prepare("DELETE FROM image WHERE id = '?'")
-	stmt, err := dbClient.DB().Prepare("UPDATE image SET deleted = true WHERE id=?")
-	if err != nil {
-		c.AbortWithError(500, err)
-	}
-	fmt.Println("qparams[0]", qparams.ID[0])
-	idToDelete := qparams.ID[0]
-	_, err = stmt.Exec(idToDelete)
-	if err != nil {
-		c.AbortWithError(500, err)
-	}
-	/*
-		lastID, err := res.LastInsertId()
+	for _, qpID := range qparams.ID {
+		// Deprecating hard deletes for soft deletes
+		//stmt, err := dbClient.DB().Prepare("DELETE FROM image WHERE id = '?'")
+		stmt, err := dbClient.DB().Prepare("UPDATE image SET deleted = true WHERE id=?")
 		if err != nil {
 			c.AbortWithError(500, err)
 		}
-		rowCnt, err := res.RowsAffected()
+		_, err = stmt.Exec(qpID)
 		if err != nil {
 			c.AbortWithError(500, err)
 		}
-		fmt.Printf("ID = %d, affected = %d\n", lastID, rowCnt)
-	*/
+	}
 }

@@ -2,4 +2,4 @@
 
 curl \
 -X DELETE \
-localhost:8081/images?id=f6f7f941-9d30-477d-9269-6c0cdee1fe5b
+localhost:8081/images?id=e9f2a794-1a42-45f9-9f4f-7b1b2f002c6e
