@@ -11,8 +11,12 @@ const (
 // Image Web Server Configuration
 const (
 	// The directory uploaded images are saved which are served from
-	ImageDataDir    = "/Users/mr_trashcans/go/src/github.com/z0mi3ie/goimgs/data/www/images"
-	ImageServerHost = "http://localhost"
+	// Running app locally, need to pass these in from CLI
+	// ImageDataDir    = "/Users/mr_trashcans/go/src/github.com/z0mi3ie/goimgs/data/www/images"
+	// ImageServerHost = "http://localhost"
+
+	ImageDataDir    = "/data/www/images"
+	ImageServerHost = "http://imgserver"
 	ImageServerPort = "8080"
 	ImageServerPath = "/images/"
 )

@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/z0mi3ie/goimgs/config"
-	"github.com/z0mi3ie/goimgs/db"
 	"github.com/z0mi3ie/goimgs/routers"
 )
 
@@ -26,12 +25,14 @@ func NewServer() *Server {
 
 // Start starts the server
 func (s *Server) Start() {
-	dbClient, err := db.NewMySQLClient(config.MySQLUser, config.MySQLPassword, config.MySQLDatabase)
-	if err != nil {
-		fmt.Println(err)
-		panic(1)
-	}
-	defer dbClient.DB().Close()
+	/*
+		dbClient, err := db.NewMySQLClient(config.MySQLUser, config.MySQLPassword, config.MySQLDatabase)
+		if err != nil {
+			fmt.Println(err)
+			panic(1)
+		}
+		defer dbClient.DB().Close()
+	*/
 
 	s.router.MaxMultipartMemory = config.ServerMaxFileSize
 

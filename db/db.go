@@ -23,7 +23,9 @@ type Client struct {
 func NewMySQLClient(user string, pass string, dbase string) (*Client, error) {
 	fmt.Println("NewMySqlClient called")
 	fmt.Println("user pass dbase", user, pass, dbase)
-	dsn := fmt.Sprintf("%s:%s@/%s", user, pass, dbase)
+	//dsn := fmt.Sprintf("%s:%s@tcp(localhost:3306)/%s", user, pass, dbase)
+	dsn := fmt.Sprintf("%s:%s@tcp(mysql:3306)/%s", user, pass, dbase)
+	fmt.Println("Attempting to connect to database with:", dsn)
 	db, err := sql.Open(DriverName, dsn)
 	if err != nil {
 		return nil, err
