@@ -22,8 +22,8 @@ const (
 // Config holds all of the configuration for the app
 type Config struct {
 	// API Config
-	ServerPort        int
-	ServerMaxFileSize int64
+	ServerPort        string
+	ServerMaxFileSize string
 
 	// MySQL DB Configuration
 	MySQLUser     string
@@ -38,32 +38,49 @@ type Config struct {
 	ImageServerTarget string
 }
 
-// NewServerConfig generates and returns an object with all of the configuration values
+// NewServerConfig generates and returns a struct to hold all of the service's configuration values
 func NewServerConfig() (*Config, error) {
 	c := &Config{}
 
-	p := utils.MustGetEnvironmentVariable(envAppServerPort)
-	i, err := strconv.Atoi(p)
-	if err != nil {
-		return nil, err
-	}
-	c.ServerPort = i
-	s := utils.MustGetEnvironmentVariable(envAppMaxFileSize)
-	i64, err := strconv.ParseInt(s, 10, 64)
-	if err != nil {
-		return nil, err
-	}
-	c.ServerMaxFileSize = i64
+	c.ServerPort = utils.MustGetEnvironmentVariable(envAppServerPort)
+	c.ServerMaxFileSize = utils.MustGetEnvironmentVariable(envAppMaxFileSize)
 
 	c.ImageDataDir = utils.MustGetEnvironmentVariable(envImageDataDir)
 	c.ImageServerHost = utils.MustGetEnvironmentVariable(envImageServerHost)
 	c.ImageServerPort = utils.MustGetEnvironmentVariable(envImageServerPort)
 	c.ImageServerPath = utils.MustGetEnvironmentVariable(envImageServerPath)
-	c.ImageServerTarget = fmt.Sprintf("%s:%s%s", c.ImageServerHost, c.ImageServerPort, c.ImageServerPath)
+	c.ImageServerTarget = buildImageServerTarget(c.ImageServerHost, c.ImageServerPort, c.ImageServerPath)
 
 	c.MySQLDatabase = utils.MustGetEnvironmentVariable(envMySQLDatabase)
 	c.MySQLUser = utils.MustGetEnvironmentVariable(envMySQLUser)
 	c.MySQLPassword = utils.MustGetEnvironmentVariable(envMySQLPassword)
 
 	return c, nil
+}
+
+func buildImageServerTarget(host string, port string, path string) string {
+	return fmt.Sprintf("%s:%s%s", host, port, path)
+}
+
+// ServerPortInt returns the server port the config has read in as an
+// int for use where int is needed, but it panics if there is an
+// error encountered since we need the server port to be valid to
+// start the server
+func (c *Config) ServerPortInt() int {
+	i, err := strconv.Atoi(c.ServerPort)
+	if err != nil {
+		panic(fmt.Sprintf("ServerPort is not parseable to int: %s", c.ServerPort))
+	}
+	return i
+}
+
+// ServerMaxFileSizeInt64 returns the max file size the config has read in as an
+// int64 for use where int64 is needed. A panic occurs if there is an error
+// encountered since we need a valid max file size to start the server
+func (c *Config) ServerMaxFileSizeInt64() int64 {
+	i64, err := strconv.ParseInt(c.ServerMaxFileSize, 10, 64)
+	if err != nil {
+		panic(fmt.Sprintf("ServerMaxFileSize is not parseable to int: %s", c.ServerMaxFileSize))
+	}
+	return i64
 }
