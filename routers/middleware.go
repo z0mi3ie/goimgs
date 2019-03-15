@@ -1,8 +1,6 @@
 package routers
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
 	"github.com/z0mi3ie/goimgs/config"
 	"github.com/z0mi3ie/goimgs/db"
@@ -12,6 +10,7 @@ import (
 const (
 	MySQLClientKey = "MySQLClientKey"
 	QueryParamsKey = "QueryParamsKey"
+	ConfigKey      = "ConfigKey"
 )
 
 // DeleteImageQueryParams is the query params for a DeleteImage call
@@ -21,8 +20,8 @@ type DeleteImageQueryParams struct {
 
 // MySQLClientMiddleware adds a MySQL client to the gin.Context
 func MySQLClientMiddleware(c *gin.Context) {
-	fmt.Println("Got it!")
-	dbClient, err := db.NewMySQLClient(config.MySQLUser, config.MySQLPassword, config.MySQLDatabase)
+	cfg := c.MustGet(ConfigKey).(*config.Config)
+	dbClient, err := db.NewMySQLClient(cfg.MySQLUser, cfg.MySQLPassword, cfg.MySQLDatabase)
 	if err != nil {
 		c.AbortWithError(500, err)
 	}
@@ -42,4 +41,12 @@ func DeleteImageQueryParamsMiddleware(c *gin.Context) {
 // CORSHeaderMiddleware handles setting up the CORS header for responses
 func CORSHeaderMiddleware(c *gin.Context) {
 	c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+}
+
+// ConfigMiddleware adds a config struct to the requests context so we can access
+// it for the rest of the request
+func ConfigMiddleware(cfg *config.Config) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Set(ConfigKey, cfg)
+	}
 }

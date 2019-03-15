@@ -13,45 +13,46 @@ import (
 // configuration and fields
 type Server struct {
 	router *gin.Engine
+	config *config.Config
 }
 
 // NewServer creates a new server struct and performs initial setup
 func NewServer() *Server {
+	cfg, err := config.NewServerConfig()
+	if err != nil {
+		// If we can't even initialize the config we are going to have a bad time
+		panic(1)
+	}
 	server := &Server{
 		router: gin.Default(),
+		config: cfg,
 	}
+	server.router.MaxMultipartMemory = cfg.ServerMaxFileSize
+
 	return server
 }
 
 // Start starts the server
 func (s *Server) Start() {
-	/*
-		dbClient, err := db.NewMySQLClient(config.MySQLUser, config.MySQLPassword, config.MySQLDatabase)
-		if err != nil {
-			fmt.Println(err)
-			panic(1)
-		}
-		defer dbClient.DB().Close()
-	*/
-
-	s.router.MaxMultipartMemory = config.ServerMaxFileSize
-
 	s.router.POST("/images",
+		routers.ConfigMiddleware(s.config),
 		routers.MySQLClientMiddleware,
 		routers.CORSHeaderMiddleware,
 		routers.UploadImages,
 	)
 	s.router.GET("/images",
+		routers.ConfigMiddleware(s.config),
 		routers.MySQLClientMiddleware,
 		routers.CORSHeaderMiddleware,
 		routers.GetImages,
 	)
 	s.router.DELETE("/images",
+		routers.ConfigMiddleware(s.config),
 		routers.MySQLClientMiddleware,
 		routers.DeleteImageQueryParamsMiddleware,
 		routers.CORSHeaderMiddleware,
 		routers.DeleteImages,
 	)
 
-	s.router.Run(fmt.Sprintf(":%v", config.ServerPort))
+	s.router.Run(fmt.Sprintf(":%v", s.config.ServerPort))
 }

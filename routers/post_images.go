@@ -19,14 +19,20 @@ import (
 // NOTE: If an error is encountered here during the initial implementation the
 // API will return a 500 -- not ideal and this will be cleaned up to make more sense :)
 func UploadImages(c *gin.Context) {
+	// Get the database client out of the context
+	dbClient := c.MustGet(MySQLClientKey).(*db.Client)
+	defer dbClient.DB().Close()
+
+	// Get the config out of the context
+	cfg := c.MustGet(ConfigKey).(*config.Config)
+
 	fmt.Println("Uploading image")
 	form, err := c.MultipartForm()
 	if err != nil {
 		c.AbortWithError(500, err)
 	}
 	files := form.File["image"]
-	dbClient := c.MustGet(MySQLClientKey).(*db.Client)
-	defer dbClient.DB().Close()
+
 	for _, file := range files {
 		// Add file data to the database
 		imgData, err := image.NewImageData(file)
@@ -37,7 +43,7 @@ func UploadImages(c *gin.Context) {
 		if err != nil {
 			c.AbortWithError(500, err)
 		}
-		res, err := stmt.Exec(imgData.ID(), imgData.URL(config.ImageServerTarget()), imgData.OGName())
+		res, err := stmt.Exec(imgData.ID(), imgData.URL(cfg.ImageServerTarget), imgData.OGName())
 		if err != nil {
 			c.AbortWithError(500, err)
 		}
@@ -52,7 +58,7 @@ func UploadImages(c *gin.Context) {
 		fmt.Printf("ID = %d, affected = %d\n", lastID, rowCnt)
 
 		// Save the file to the target destination
-		targetDestination := fmt.Sprintf("%s/%s", config.ImageDataDir, imgData.Filename())
+		targetDestination := fmt.Sprintf("%s/%s", cfg.ImageDataDir, imgData.Filename())
 		if err := c.SaveUploadedFile(imgData.File(), targetDestination); err != nil {
 			c.AbortWithError(500, err)
 		}

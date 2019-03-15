@@ -1,9 +1,8 @@
-up/app:
+run/app:
 	go run main.go
 
 up/goimgs:
-	#docker-compose up --build app
-	docker-compose up app
+	docker-compose up --build app
 
 rebuild/goimgs:
 	docker-compose down app
