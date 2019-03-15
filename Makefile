@@ -1,5 +1,8 @@
-run/app:
+local/run/app:
 	go run main.go
+
+local/test/unittest:
+	go test ./...
 
 up/goimgs:
 	docker-compose up --build app

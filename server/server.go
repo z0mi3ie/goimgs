@@ -27,7 +27,7 @@ func NewServer() *Server {
 		router: gin.Default(),
 		config: cfg,
 	}
-	server.router.MaxMultipartMemory = cfg.ServerMaxFileSize
+	server.router.MaxMultipartMemory = cfg.ServerMaxFileSizeInt64()
 
 	return server
 }
