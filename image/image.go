@@ -94,10 +94,7 @@ func (d *Data) OGName() string {
 // generateUUIDString is a helper that generates a UUID V4 and returns its
 // string format, or an error if one is encountered
 func generateUUIDString() (string, error) {
-	gid, err := uuid.NewV4()
-	if err != nil {
-		return "", err
-	}
+	gid := uuid.NewV4()
 	return gid.String(), nil
 }
 
